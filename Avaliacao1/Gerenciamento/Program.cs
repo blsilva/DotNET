@@ -1,16 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 class Program
 {
     static void Main()
     {
-        Medico medico = new Medico("Dr. José", new DateTime(1980, 1, 1), "12345678901", "CRM1234");
-        Paciente paciente = new Paciente("Maria", new DateTime(1990, 5, 10), "98765432109", Sexo.Feminino, "Febre");
-
         Consultorio consultorio = new Consultorio();
-        consultorio.CadastrarMedico(medico);
-        consultorio.CadastrarPaciente(paciente);
+
+        Medico medico1 = new Medico("Dr. José", new DateTime(1980, 1, 1), "12345678901", "CRM1234");
+        Medico medico2 = new Medico("Dr. Ana", new DateTime(1985, 3, 15), "23456789012", "CRM1234"); // Médico com CRM duplicado
+        Medico medico3 = new Medico("Dr. Carlos", new DateTime(1975, 8, 5), "34567890123", "CRM5678");
+
+        Paciente paciente1 = new Paciente("Maria", new DateTime(1990, 5, 10), "98765432109", Sexo.Feminino);
+        Paciente paciente2 = new Paciente("João", new DateTime(1988, 7, 20), "98765432109", Sexo.Masculino); // Paciente com CPF duplicado
+
+        consultorio.CadastrarMedico(medico1);
+        consultorio.CadastrarMedico(medico2);
+        consultorio.CadastrarMedico(medico3);
+
+        consultorio.CadastrarPaciente(paciente1);
+        consultorio.CadastrarPaciente(paciente2);
 
         consultorio.GerarRelatorioMedicos();
         consultorio.GerarRelatorioPacientes();
@@ -40,6 +50,11 @@ class Pessoa
     {
         return cpf;
     }
+
+    public override string ToString()
+    {
+        return $"Nome: {Nome}, Data de Nascimento: {DataNascimento.ToShortDateString()}, CPF: {CPF}";
+    }
 }
 
 class Medico : Pessoa
@@ -51,18 +66,26 @@ class Medico : Pessoa
     {
         CRM = crm;
     }
+
+    public override string ToString()
+    {
+        return $"{base.ToString()}, CRM: {CRM}";
+    }
 }
 
 class Paciente : Pessoa
 {
     public Sexo Sexo { get; set; }
-    public string Sintomas { get; set; }
 
-    public Paciente(string nome, DateTime dataNascimento, string cpf, Sexo sexo, string sintomas)
+    public Paciente(string nome, DateTime dataNascimento, string cpf, Sexo sexo)
         : base(nome, dataNascimento, cpf)
     {
         Sexo = sexo;
-        Sintomas = sintomas;
+    }
+
+    public override string ToString()
+    {
+        return $"{base.ToString()}, Sexo: {Sexo}";
     }
 }
 
@@ -79,12 +102,32 @@ class Consultorio
 
     public void CadastrarMedico(Medico medico)
     {
-        medicos.Add(medico);
+        if (medicos.Any(m => m.CPF == medico.CPF))
+        {
+            Console.WriteLine($"Médico com CPF {medico.CPF} já cadastrado. Cadastro não realizado.");
+        }
+        else if (medicos.Any(m => m.CRM == medico.CRM))
+        {
+            Console.WriteLine($"Médico com CRM {medico.CRM} já cadastrado. Cadastro não realizado.");
+        }
+        else
+        {
+            medicos.Add(medico);
+            Console.WriteLine($"Médico {medico.Nome} cadastrado com sucesso.");
+        }
     }
 
     public void CadastrarPaciente(Paciente paciente)
     {
-        pacientes.Add(paciente);
+        if (pacientes.Any(p => p.CPF == paciente.CPF))
+        {
+            Console.WriteLine($"Paciente com CPF {paciente.CPF} já cadastrado. Cadastro não realizado.");
+        }
+        else
+        {
+            pacientes.Add(paciente);
+            Console.WriteLine($"Paciente {paciente.Nome} cadastrado com sucesso.");
+        }
     }
 
     public void GerarRelatorioMedicos()
@@ -92,7 +135,7 @@ class Consultorio
         Console.WriteLine("Relatório de Médicos:");
         foreach (var medico in medicos)
         {
-            Console.WriteLine($"Nome: {medico.Nome}, CRM: {medico.CRM}");
+            Console.WriteLine(medico);
         }
         Console.WriteLine();
     }
@@ -102,7 +145,7 @@ class Consultorio
         Console.WriteLine("Relatório de Pacientes:");
         foreach (var paciente in pacientes)
         {
-            Console.WriteLine($"Nome: {paciente.Nome}, Sexo: {paciente.Sexo}, Sintomas: {paciente.Sintomas}");
+            Console.WriteLine(paciente);
         }
         Console.WriteLine();
     }
