@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 class Program
 {
@@ -7,8 +8,12 @@ class Program
         Medico medico = new Medico("Dr. José", new DateTime(1980, 1, 1), "12345678901", "CRM1234");
         Paciente paciente = new Paciente("Maria", new DateTime(1990, 5, 10), "98765432109", Sexo.Feminino, "Febre");
 
-        Console.WriteLine(medico);
-        Console.WriteLine(paciente);
+        Consultorio consultorio = new Consultorio();
+        consultorio.CadastrarMedico(medico);
+        consultorio.CadastrarPaciente(paciente);
+
+        consultorio.GerarRelatorioMedicos();
+        consultorio.GerarRelatorioPacientes();
     }
 }
 
@@ -35,11 +40,6 @@ class Pessoa
     {
         return cpf;
     }
-
-    public override string ToString()
-    {
-        return $"Nome: {Nome}, Data de Nascimento: {DataNascimento.ToShortDateString()}, CPF: {CPF}";
-    }
 }
 
 class Medico : Pessoa
@@ -50,11 +50,6 @@ class Medico : Pessoa
         : base(nome, dataNascimento, cpf)
     {
         CRM = crm;
-    }
-
-    public override string ToString()
-    {
-        return $"{base.ToString()}, CRM: {CRM}";
     }
 }
 
@@ -69,9 +64,46 @@ class Paciente : Pessoa
         Sexo = sexo;
         Sintomas = sintomas;
     }
+}
 
-    public override string ToString()
+class Consultorio
+{
+    private List<Medico> medicos;
+    private List<Paciente> pacientes;
+
+    public Consultorio()
     {
-        return $"{base.ToString()}, Sexo: {Sexo}, Sintomas: {Sintomas}";
+        medicos = new List<Medico>();
+        pacientes = new List<Paciente>();
+    }
+
+    public void CadastrarMedico(Medico medico)
+    {
+        medicos.Add(medico);
+    }
+
+    public void CadastrarPaciente(Paciente paciente)
+    {
+        pacientes.Add(paciente);
+    }
+
+    public void GerarRelatorioMedicos()
+    {
+        Console.WriteLine("Relatório de Médicos:");
+        foreach (var medico in medicos)
+        {
+            Console.WriteLine($"Nome: {medico.Nome}, CRM: {medico.CRM}");
+        }
+        Console.WriteLine();
+    }
+
+    public void GerarRelatorioPacientes()
+    {
+        Console.WriteLine("Relatório de Pacientes:");
+        foreach (var paciente in pacientes)
+        {
+            Console.WriteLine($"Nome: {paciente.Nome}, Sexo: {paciente.Sexo}, Sintomas: {paciente.Sintomas}");
+        }
+        Console.WriteLine();
     }
 }
