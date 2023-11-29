@@ -93,11 +93,17 @@ class Pessoa
         CPF = TratarCPF(cpf);
     }
 
-    private string TratarCPF(string cpf)
+     private string TratarCPF(string cpf)
     {
-        return cpf;
+        if (cpf.Length == 11 && cpf.All(char.IsDigit))
+        {
+            return cpf;
+        }
+        else
+        {
+            throw new ArgumentException("CPF inválido. Deve conter exatamente 11 dígitos numéricos.");
+        }
     }
-
     public override string ToString()
     {
         return $"Nome: {Nome}, Data de Nascimento: {DataNascimento.ToShortDateString()}, CPF: {CPF}";
